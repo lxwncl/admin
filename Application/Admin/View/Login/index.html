@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html class="cye-disabled"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>{$system['page_title']}</title>
+    <meta name="author" content="DeathGhost">
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/login/style.css" tppabs="css/style.css">
+    <style>
+        body{
+            height:100%;
+            background:#16a085;
+            overflow:hidden;
+        }
+        canvas{
+            z-index:-1;
+            position:absolute;
+        }
+    </style>
+    <script src="__PUBLIC__/login/jquery.js"></script>
+    <style id="nightModeStyle">
+        html.cye-enabled.cye-nm:not(*:-webkit-full-screen) body,
+        html.cye-enabled.cye-nm:not(*:-webkit-full-screen)
+        #cye-workaround-body {
+            -webkit-filter:contrast(91%) brightness(84%) invert(1);
+        }
+    </style>
+    <style id="cyebody">
+        html.cye-enabled.cye-lm body{
+            background-color:#cce8cf !important;border-color:rgb(51, 58, 51) !important;
+            background-image:none !important;color:#000000  !important
+        }
+    </style>
+    <style id="cyediv">
+        html.cye-enabled.cye-lm div{
+            background-color:#cce8cf !important;border-color:rgb(51, 58, 51) !important;
+            background-image:none !important;
+            color:#000000  !important
+        }
+    </style>
+    <style id="cyetable">
+        html.cye-enabled.cye-lm th{
+            background-color:#cce8cf !important;border-color:rgb(51, 58, 51) !important;
+            background-image:none !important;
+            color:#000000  !important
+        }
+        html.cye-enabled.cye-lm td{
+            background-color:#cce8cf !important;
+            border-color:rgb(51, 58, 51) !important;
+            background-image:none !important;color:#000000  !important
+        }
+    </style>
+    <style id="cyetextInput">
+        html.cye-enabled.cye-lm input[type=text]{
+            background-color:#cce8cf !important;
+            border-color:rgb(51, 58, 51) !important;
+            background-image:none !important;
+            color:#000000  !important
+        }
+        html.cye-enabled.cye-lm textarea{
+            background-color:#cce8cf !important;border-color:rgb(51, 58, 51) !important;
+            background-image:none !important;color:#000000  !important
+        }
+    </style>
+    <style id="cyeselect">
+        html.cye-enabled.cye-lm select{
+            background-color:#cce8cf !important;
+            border-color:rgb(51, 58, 51) !important;
+            background-image:none !important;color:#000000  !important
+        }
+    </style>
+    <style id="cyeul">
+        html.cye-enabled.cye-lm ul{
+            background-color:#cce8cf !important;
+            border-color:rgb(51, 58, 51) !important;
+            background-image:none !important;color:#000000  !important
+        }
+    </style>
+    <style id="cyeChangeByClick">
+        html.cye-enabled.cye-lm .cye-lm-tag,
+        html.cye-enabled.cye-lm.cye-lm-tag{
+            background-color:#cce8cf !important;
+            border-color:rgb(51, 58, 51) !important;
+            background-image:none !important;
+            color:#000000  !important
+        }
+    </style>
+    <!--<script src="__PUBLIC__/login/verificationNumbers.js" tppabs="js/verificationNumbers.js"></script>-->
+    <script src="__PUBLIC__/login/Particleground.js" tppabs="js/Particleground.js"></script>
+    <script>
+        $(document).ready(function() {
+            //粒子背景特效
+            $('body').particleground({
+                dotColor: '#5cbdaa',
+                lineColor: '#5cbdaa'
+            });
+            //验证码
+//            createCode();
+        });
+    </script>
+</head>
+<div id="cyeBlackMaskLayer" style="background-color: rgb(19, 19, 19); position: fixed; width: 1980px; height: 1080px; z-index: -2147483648;"></div>
+<body style=""><canvas class="pg-canvas" width="1280" height="659"></canvas>
+<dl class="admin_login">
+    <dt>
+        <strong>{$system['page_title']}后台管理系统</strong>
+        <em> 管理系统</em>
+    </dt>
+    <dd class="user_icon">
+        <input type="text" id="account" placeholder="账号" class="login_txtbx">
+    </dd>
+    <dd class="pwd_icon">
+        <input type="password" id="password" placeholder="密码" class="login_txtbx">
+    </dd>
+    <dd class="val_icon">
+        <div class="checkcode" style="width:150px;">
+            <input type="text" id="code" style="width:150px;" id="J_codetext" placeholder="验证码" maxlength="5" class="login_txtbx">
+            <!--<canvas class="J_codeimg" id="myCanvas" onclick="createCode()">对不起，您的浏览器不支持canvas，请下载最新版浏览器!</canvas>-->
+        </div>
+        <div class="checkcode" style="width:150px;" id="codeimg">
+            <img src="{:U('code')}"  id="myCanvas"  style="width:100%"/>
+        </div>
+        <!--<input type="button" value="验证码核验" class="ver_btn" onclick="validate();">-->
+    </dd>
+    <dd>
+        <input type="button" id="submit" value="立即登陆" class="submit_btn">
+    </dd>
+    <dd>
+        <p>{$system_info['copyright']}</p>
+    </dd>
+</dl>
+</body>
+<div id="cye-workaround-body" style="position: absolute; left: 0px; top: 0px; z-index: -2147483646; background: none 0% 0% / auto repeat scroll padding-box border-box rgb(22, 160, 133); height: 703px; width: 1280px;"></div>
+<div id="cye-workaround-body-image" style="position: absolute; left: 0px; top: 0px; z-index: -2147483645; background: none 0% 0% / auto repeat scroll padding-box border-box rgba(0, 0, 0, 0); height: 703px; width: 1280px;"></div>
+<script>
+    $('#codeimg').click(function(){
+        var url =   "{:U('code')}"+'/'+Math.random();
+        $('#myCanvas').attr('src',url);
+    });
+
+    $('#submit').click(function(){
+        if ($('#account').val() == '') {
+            alert('账号不能为空');
+            return false;
+        }
+        if ($('#password').val() == '') {
+            alert('密码不能为空');
+            return false;
+        }
+        if ($('#code').val() == '') {
+            alert('验证码不能为空');
+            return false;
+        }
+        ajaxLogin();
+    });
+
+    function ajaxLogin()
+    {
+        $.ajax({
+            url:"{:U('ajaxLogin')}",
+            data:{account:$('#account').val(),password:$('#password').val(),code:$('#code').val()},
+            type:"POST",
+            success:function(res){
+                if (res.code == 1) {
+                    window.location.href=res.data.url;
+                }else{
+                    var url =   "{:U('code')}"+'/'+Math.random();
+                    $('#myCanvas').attr('src',url);
+                    alert(res.msg);
+                }
+            }
+        });
+    }
+
+</script>
+</html>

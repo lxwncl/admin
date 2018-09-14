@@ -1,0 +1,96 @@
+<style>
+    .label_div{
+        width: 60px;
+        padding: 8px 15px;
+        height: 38px;
+        line-height: 20px;
+        border-width: 1px;
+        border-style: solid;
+        border-radius: 2px 0 0 2px;
+        text-align: center;
+        background-color: #FBFBFB;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        box-sizing: border-box;
+        display:inline;
+        border-color: #e6e6e6;
+    }
+</style>
+<div class="layui-row" style="margin: 10px;">
+    <div class="layui-col-md2">
+        <a href="{:U('index')}" class="layui-btn layui-btn-warm"><i class="iconfont icon-chexiao">返回</i></a>
+    </div>
+</div>
+<fieldset class="layui-elem-field" style="margin: 10px;">
+    <legend>添加新权限</legend>
+    <div class="layui-field-box">
+        <div class="site-text">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">权限名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" lay-verify="required" placeholder="权限名称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item" id="show_div">
+                    <label class="layui-form-label">url</label>
+                    <div class="layui-input-block" style="margin-bottom:10px;">
+                        <input style="display:inline;width:88%" type="text" name="jump[]" lay-verify="required" placeholder="如 admin/index" autocomplete="off" class="layui-input">
+                        <div class="label_div add_div"><i class="iconfont icon-xinjian"></i></div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <button class="layui-btn layui-btn-fluid" id="add" lay-submit="" lay-filter="add">立即提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</fieldset>
+
+
+
+<script>
+    var lock=1;
+    layui.use('form', function(){
+        var form = layui.form;
+        form.on('submit(add)',function(data){
+            if (lock) {
+                lock=0;
+                ajaxAddAuthority(data.field);
+            }
+
+            return false;
+        });
+    });
+
+    function ajaxAddAuthority(data)
+    {
+        $.ajax({
+            url:"{:U('ajaxAddAuthority')}",
+            data:data,
+            type:"POST",
+            success:function(res){
+                if (res.code==1) {
+                    layer.msg(res.msg);
+                    setTimeout(function(){window.location.href="{:U('index')}";},800);
+                } else{
+                    layer.msg(res.msg);
+                    lock=1;
+                }
+            }
+        });
+    }
+
+
+    $(document).on('click','.add_div',function(){
+        var html    =   "<div class='layui-input-block' style='margin-bottom:10px;'><input style='display:inline;width:88%' type='text' name='jump[]' lay-verify='required' placeholder='如 admin/index' autocomplete='off' class='layui-input'><div class='label_div add_div'><i class='iconfont icon-xinjian'></i></div><div class='label_div del_div'><i class='iconfont icon-jian'></i></div></div>";
+        $('#show_div').append(html); 
+    });
+
+    $(document).on('click','.del_div',function(){
+        $(this).parent().remove();
+    });
+</script>
+

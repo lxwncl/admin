@@ -1,0 +1,6 @@
+Application/Runtime/
+Application/Admin/Conf/mysql.php
+Application/Admin/conf/redis.php
+Public/upload/
+.idea/
+.htaccess

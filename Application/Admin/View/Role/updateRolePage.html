@@ -1,0 +1,79 @@
+<div class="layui-row" style="margin: 10px;">
+    <div class="layui-col-md2">
+        <a href="{:U('index')}" class="layui-btn layui-btn-warm"><i class="iconfont icon-chexiao">返回</i></a>
+    </div>
+</div>
+<fieldset class="layui-elem-field" style="margin: 10px;">
+    <legend>修改角色</legend>
+    <div class="layui-field-box">
+        <div class="site-text">
+            <form class="layui-form layui-form-pane" action="">
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">角色名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" value="{$data[name]}" name="name" lay-verify="required" placeholder="角色名称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item" pane="">
+                    <label class="layui-form-label">权限</label>
+                    <div class="layui-input-block">
+                        <volist name="authority_info" id="vo">
+                            <if condition="in_array($vo[id],$data[authority_arr])">
+                                <input lay-verify="required" checked type="checkbox" value="{$vo[id]}" name="authority_id[]" title="{$vo[name]}">
+                                <else/>
+                                <input lay-verify="required" type="checkbox" value="{$vo[id]}" name="authority_id[]" title="{$vo[name]}">
+                            </if>
+
+                        </volist>
+                    </div>
+                </div>
+                <input name="id" value="{$data[id]}" type="hidden"/>
+                <div class="layui-form-item">
+                    <button class="layui-btn layui-btn-fluid" id="update" lay-submit="" lay-filter="update">修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</fieldset>
+
+
+
+
+
+<script src="__PUBLIC__/selfjs/self_form.js"></script>
+<script>
+
+    var lock    =   1
+
+    function ajaxUpdateRole(data)
+    {
+        $.ajax({
+            url:"{:U('ajaxUpdateRole')}",
+            data:data,
+            type:"POST",
+            success:function(res){
+                if (res.code == 1) {
+                    layer.msg(res.msg);
+                    setTimeout(function(){window.location.href="{:U('index')}"},1000);
+                } else{
+                    layer.msg(res.msg);
+                    lock=1;
+                }
+            }
+        });
+    }
+
+    layui.use('form', function(){
+        var form = layui.form;
+
+        form.on('submit(update)',function(data){
+            if (lock) {
+                lock=0;
+                ajaxUpdateRole(data.field);
+            }
+
+            return false;
+        });
+    });
+</script>

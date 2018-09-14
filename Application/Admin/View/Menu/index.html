@@ -1,0 +1,169 @@
+<div style="margin:20px;">
+    <div class="layui-col-md13">
+        <div class="layui-btn-group" id="add_menu">
+            <a class="layui-btn layui-btn-normal" data-type="add" href="{:U('addMenuPage')}">
+                <i class="layui-icon"></i>新增
+            </a>
+        </div>
+    </div>
+    <div id="menuTree" class="layui-tree">
+        <div class="layui-form">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th  style="width:2%">id</th>
+                    <th class="value_col"  style="width:10%">菜单名称</th>
+                    <th class="value_col"  style="width:10%">url</th>
+                    <th class="value_col"  style="width:2%">层级</th>
+                    <th class="value_col"  style="width:5%">可见角色</th>
+                    <th class="value_col"  style="width:5%">图标</th>
+                    <th class="value_col"  style="width:5%">排序</th>
+                    <th class="value_col"  style="width:13%">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <volist name="menu_info" id="vo">
+                    <tr class="">
+                        <td>{$vo[id]}</td>
+                        <td class="value_col open_son_list" menu_id="{$vo[id]}">
+                            <li>
+                                <i class="iconfont icon-sanjiaoright"></i>
+                                <a href="javascript:;"><i class="iconfont icon-wenjianjia1"></i><cite>{$vo['name']}</cite></a>
+                            </li>
+                        </td>
+                        <td class="value_col">
+                            <div class="layui-table-cell laytable-cell-1-username">{$vo['jump']}</div>
+                        </td>
+                        <td class="value_col">
+                            <div class="layui-table-cell laytable-cell-1-username">{$vo['level']}</div>
+                        </td>
+                        <td class="value_col">
+                            <div class="layui-table-cell laytable-cell-1-username"></div>
+                        </td>
+                        <td class="value_col">
+                            <div class="layui-table-cell laytable-cell-1-username"><i class="iconfont {$vo[ico]}"></i></div>
+                        </td>
+                        <td class="value_col">
+                            <div class="layui-table-cell laytable-cell-1-username"><i class="layui-icon">{$vo['sort']}</i></div>
+                        </td>
+                        <td class="value_col">
+                            <a class="layui-btn layui-btn-danger layui-btn-xs" onclick="del({$vo['id']},{$vo['level']})"><i class="iconfont icon-cha"></i>删除</a><a class="layui-btn layui-btn-xs  layui-btn-error" onclick="update({$vo['id']})"><i class="layui-icon"></i> 编辑</a>
+                        </td>
+                    </tr>
+                    <if condition="$vo[son]">
+                        <volist name="vo[son]" id="voo">
+                            <tr class="son_list son_list_{$vo[id]}" menu_id="{$vo[id]}">
+                                <td>{$voo[id]}</td>
+                                <td class="value_col">
+                                    <li>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<i class="iconfont icon-sanjiaoright"></i><a href="javascript:;"><i class="iconfont icon-wenjianjia1"></i><cite>{$voo['name']}</cite></a>
+                                    </li>
+                                </td>
+                                <td class="value_col">
+                                    <div class="layui-table-cell laytable-cell-1-username">{$voo['jump']}</div>
+                                </td>
+                                <td class="value_col">
+                                    <div class="layui-table-cell laytable-cell-1-username">{$voo['level']}</div>
+                                </td>
+                                <td class="value_col">
+                                    <div class="layui-table-cell laytable-cell-1-username"></div>
+                                </td>
+                                <td class="value_col">
+                                    <div class="layui-table-cell laytable-cell-1-username"><i class="iconfont {$voo[ico]}"></i></div>
+                                </td>
+                                <td class="value_col">
+                                    <div class="layui-table-cell laytable-cell-1-username"><i class="layui-icon">{$voo['sort']}</i></div>
+                                </td>
+                                <td class="value_col">
+                                    <a class="layui-btn layui-btn-danger layui-btn-xs" onclick="del({$voo['id']},{$voo['level']})"><i class="iconfont icon-cha"></i>删除</a><a class="layui-btn layui-btn-xs  layui-btn-normal" onclick="update({$voo['id']})"><i class="layui-icon"></i> 编辑</a>
+                                </td>
+                            </tr>
+                        </volist>
+                    </if>
+                </volist>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    layui.use(['form','layer'], function(){
+
+    });
+    /*
+     * 列表显示或隐藏
+     */
+    $('.son_list').hide();
+
+
+    /*
+     *显示隐藏子菜单
+     */
+    $('.open_son_list').click(function(){
+
+         var menu_id         =  $(this).attr('menu_id');
+         var id              =  '.son_list_'+menu_id;
+         if($(this).hasClass('open')){
+             //关闭图标
+             $(this).removeClass('open');
+             $(this).find('i').eq(0).removeClass('icon-xiajiantou').addClass('icon-sanjiaoright');
+             $(this).find('i').eq(1).removeClass('icon-wenjianjia').addClass('icon-wenjianjia1');
+         }else{
+             //打开图标
+             $(this).addClass('open');
+             $(this).find('i').eq(0).removeClass('icon-sanjiaoright').addClass('icon-xiajiantou');
+             $(this).find('i').eq(1).removeClass('icon-wenjianjia1').addClass('icon-wenjianjia');
+         }
+
+         if ($(id).hasClass('open')) {
+             //隐藏
+             $(id).removeClass('open');
+             $(id).hide();
+         }else{
+             //显示
+             $(id).addClass('open');
+             $(id).show();
+         }
+    });
+
+    function del(menu_id, level){
+        if (level == 1) {
+            layer.confirm('当前菜单存在子菜单，是否连同子菜单一同删除', {
+                btn: ['是','否'] //按钮
+            }, function(){
+                ajaxDelMenu(menu_id);
+            });
+        } else {
+            ajaxDelMenu(menu_id);
+        }
+    }
+
+    var lock    =   1;
+    function ajaxDelMenu(menu_id)
+    {
+        lock    =   0;
+        $.ajax({
+            url:"{:U('ajaxDelMenu')}",
+            data:{menu_id:menu_id},
+            success:function(res){
+                if (res.code == 1) {
+                    layer.msg(res.msg);
+                    setTimeout(function(){window.location.href="{:U('index')}"},800);
+                }else{
+                    layer.msg(res.msg);
+                    lock    =   1;
+                }
+            }
+        });
+    }
+
+    function update(menu_id)
+    {
+        var temp    =   "{:U('updateMenuPage')}"
+        window.location.href=temp+'/menu_id/'+menu_id;
+    }
+
+</script>
+
+

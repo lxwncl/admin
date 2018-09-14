@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>{$system_info['page_title']}</title>
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css">
+    <link rel="stylesheet" href="__PUBLIC__/css/font.css">
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">{$system_info['page_title']}管理后台</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="">控制台</a></li>
+            <li class="layui-nav-item"><a href="">商品管理</a></li>
+            <li class="layui-nav-item"><a href="">用户</a></li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">其它系统</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">邮件管理</a></dd>
+                    <dd><a href="">消息管理</a></dd>
+                    <dd><a href="">授权管理</a></dd>
+                </dl>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    贤心
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="{:U('login/logout')}">退出登录</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <volist name="menu_info" id="vo">
+
+                    <!--<if condition="$vo[jump_arr][0] eq $controller_name AND empty($vo[son])">-->
+                        <!--&lt;!&ndash;li选择效果&ndash;&gt;-->
+                        <!--<li class="layui-nav-item layui-nav-itemed layui-this">-->
+                        <!--<elseif condition="$vo[jump_arr][0] eq $controller_name"/>-->
+                        <!--<li class="layui-nav-item layui-nav-itemed">-->
+                        <!--<else/>-->
+                        <!--<li class="layui-nav-item ">-->
+                    <!--</if>-->
+                    <!---->
+                    <li class="{$vo[menu_class]}">
+                    <if condition="$vo[son]">
+                            <a href="javascript:;"><i class="ico_size iconfont {$vo[ico]}"> {$vo['name']}</i></a>
+                            <dl class="layui-nav-child">
+                                <volist name="vo[son]" id="voo">
+                                    <if condition="(strtolower($voo[jump_arr][0]) eq $controller_name) and (strtolower($voo[jump_arr][1]) eq $action_name)">
+                                        <dd class="layui-this">
+                                        <else/>
+                                        <dd>
+                                    </if>
+                                        <a class="hp-tab-add" href="{:U($voo[jump])}"><i class="ico_son_size iconfont {$voo[ico]}"> {$voo['name']}</i></a>
+                                    </dd>
+                                </volist>
+                            </dl>
+                        </li>
+                        <else/>
+                            <a href="{:U($vo[jump])}"><i class="ico_size iconfont {$vo[ico]}"> {$vo['name']}</i></a>
+                        </li>
+                    </if>
+                </volist>
+            </ul>
+        </div>
+    </div>
+    <!--<script src="__PUBLIC__/layui/layui.all.js"></script>-->
+    <script src="__PUBLIC__/layui/layui.js"></script>
+    <script src="__PUBLIC__/login/jquery.js"></script>
+    <script>
+        layui.use('element',function(){
+
+        });
+    </script>
+    <!--<script src="http://libs.baidu.com/jquery/1.8.3/jquery.min.js"></script>-->
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        {__CONTENT__}
+    </div>
+    <div class="layui-footer">
+        {$system_info['copyright']}
+    </div>
+</div>
+</body>
+</html>

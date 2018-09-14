@@ -1,0 +1,140 @@
+<div class="layui-row" style="margin: 10px;">
+    <div class="layui-col-md2">
+        <a href="{:U('index')}" class="layui-btn layui-btn-warm"><i class="iconfont icon-chexiao">返回</i></a>
+    </div>
+</div>
+<fieldset class="layui-elem-field" style="margin: 10px;">
+    <legend>修改用户</legend>
+    <div class="layui-field-box">
+        <div class="site-text">
+            <form class="layui-form layui-form-pane" action="">
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">用户账号</label>
+                    <div class="layui-input-block">
+                        <input type="text" value="{$data[account]}" disabled name="account" lay-verify="required" placeholder="用户账号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">密码</label>
+                    <div class="layui-input-block">
+                        <input type="password" name="password" placeholder="不填写不修改密码" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">昵称</label>
+                    <div class="layui-input-block">
+                        <input type="text" value="{$data[name]}" name="name" placeholder="昵称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">所属城市</label>
+                    <div class="layui-input-block">
+                        <div class="layui-inline">
+                            <select name="p_id" lay-verify="required" id="p_id" lay-filter="p_id" >
+                                <option value="">请选择一个省份</option>
+                                <volist name="p_info" id="vo">
+                                    <if condition="$vo[area_id] eq $data[p_id]">
+                                        <option selected value="{$vo[area_id]}">{$vo['area_name']}</option>
+                                        <else/>
+                                        <option value="{$vo[area_id]}">{$vo['area_name']}</option>
+                                    </if>
+                                </volist>
+                            </select>
+                        </div>
+                        <div  class="layui-inline">
+                            <select name="c_id" lay-verify="required" id="c_id" lay-filter="c_id">
+                                <volist name="c_info" id="vo">
+                                    <if condition="$vo[parent_id] eq $data[p_id] and $vo[area_id] eq $data[c_id]">
+                                        <option selected value="{$vo[area_id]}">{$vo['area_name']}</option>
+                                        <elseif condition="$vo[parent_id] eq $data[p_id]"/>
+                                        <option value="{$vo[area_id]}">{$vo['area_name']}</option>
+                                        <else/>
+                                    </if>
+                                </volist>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" pane="">
+                    <label class="layui-form-label">角色</label>
+                    <div class="layui-input-block">
+                        <volist name="role_info" id="vo">
+                            <if condition="in_array($vo[id],$data[role_info])">
+                                <input lay-verify="required" type="checkbox" checked value="{$vo[id]}" name="role_id[]" title="{$vo[name]}">
+                                <else/>
+                                <input lay-verify="required" type="checkbox" value="{$vo[id]}" name="role_id[]" title="{$vo[name]}">
+                            </if>
+                        </volist>
+                    </div>
+                </div>
+                <input type="hidden" name="id" value="{$data[id]}"/>
+                <div class="layui-form-item">
+                    <button class="layui-btn layui-btn-fluid" id="update" lay-submit="" lay-filter="update">修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</fieldset>
+
+
+
+
+
+<script src="__PUBLIC__/selfjs/self_form.js"></script>
+<script>
+    var city        =   {$json_city}
+</script>
+<script>
+
+    var lock    =   1
+
+    function ajaxUpdateUser(data)
+    {
+        $.ajax({
+            url:"{:U('ajaxUpdateUser')}",
+            data:data,
+            type:"POST",
+            success:function(res){
+                if (res.code == 1) {
+                    layer.msg(res.msg);
+                    setTimeout(function(){window.location.href="{:U('index')}"},1000);
+                } else{
+                    layer.msg(res.msg);
+                    lock=1;
+                }
+            }
+        });
+    }
+
+    layui.use('form', function(){
+        var form = layui.form;
+
+        form.on('select(p_id)',function(data){
+            setCityHtml(data.value);
+            form.render('select');
+        });
+
+        form.on('submit(update)',function(data){
+            if (lock) {
+                lock=0;
+                ajaxUpdateUser(data.field);
+            }
+
+            return false;
+        });
+    });
+
+    function setCityHtml(p_id)
+    {
+
+        var html    =   "<option value=''>请选择一个城市</option>";
+        for(var i in city){
+            if (city[i]['parent_id'] == p_id) {
+                html+=  "<option value='"+city[i]['area_id']+"'>"+city[i]['area_name']+"</option>";
+            }
+        }
+        $('#c_id').html(html);
+    }
+
+</script>

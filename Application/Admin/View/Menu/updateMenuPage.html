@@ -1,0 +1,161 @@
+<div class="layui-row" style="margin: 10px;">
+    <div class="layui-col-md2">
+        <a href="{:U('index')}" class="layui-btn layui-btn-warm"><i class="iconfont icon-chexiao">返回</i></a>
+    </div>
+</div>
+<fieldset class="layui-elem-field" style="margin: 10px;">
+    <legend>添加新菜单</legend>
+    <div class="layui-field-box">
+        <div class="site-text">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">菜单类型</label>
+                    <div class="layui-input-block">
+                        <select name="level" lay-verify="required" id="level" lay-filter="level" disabled>
+                            <option value=""></option>
+                            <if condition="$data[level] eq 1">
+                                <option value="1" selected>一级菜单</option>
+                                <option value="2">二级菜单</option>
+                                <else/>
+                                <option value="1">一级菜单</option>
+                                <option value="2" selected>二级菜单</option>
+                            </if>
+                        </select>
+                    </div>
+                </div>
+                <if condition="$data[level] eq 1">
+                    <div class="layui-form-item" id="pDiv" style="display: none">
+                    <else/>
+                    <div class="layui-form-item" id="pDiv">
+                </if>
+
+                    <label class="layui-form-label">父级菜单</label>
+                    <div class="layui-input-block">
+                        <select name="parent_id" disabled>
+                            <option value=""></option>
+                            <volist name="menu_info" id="vo">
+                                <if condition="$data[parent_id] eq $vo[id]">
+                                    <option value="{$vo[id]}" selected>{$vo['name']}</option>
+                                    <else/>
+                                    <option value="{$vo[id]}">{$vo['name']}</option>
+                                </if>
+
+                            </volist>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">菜单名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" value="{$data[name]}" name="name" lay-verify="required" placeholder="菜单名称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">url</label>
+                    <div class="layui-input-block">
+                        <input value="{$data[jump]}" type="text" name="jump" lay-verify="required" placeholder="如 admin/index" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">图标&nbsp;<span id="show_ico"><i class="iconfont {$data['ico']}"></i></span></label>
+                    <div class="layui-input-block">
+                        <input value="{$data[ico]}" id="ico" type="text" name="ico" lay-verify="required" placeholder="点击选择" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">排序</label>
+                    <div class="layui-input-block">
+                        <input type="text" value="{$data[sort]}" value="0" name="sort" lay-verify="required" placeholder="大高小低" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item" pane="">
+                    <label class="layui-form-label">可见角色</label>
+                    <div class="layui-input-block">
+                        <volist name="role_info" id="vo">
+                            <if condition="in_array($vo[id],$data[role_id])">
+                                <input lay-verify="required" type="checkbox" checked value="{$vo[id]}" name="role_id[]" title="{$vo[name]}">
+                                <else/>
+                                <input lay-verify="required" type="checkbox" value="{$vo[id]}" name="role_id[]" title="{$vo[name]}">
+                            </if>
+                        </volist>
+                    </div>
+                </div>
+                <input name="id" value="{$data[id]}" type="hidden"/>
+                <div class="layui-form-item">
+                    <button class="layui-btn layui-btn-fluid" id="addmenu" lay-submit="" lay-filter="updatemenu">立即修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</fieldset>
+
+
+
+
+
+<script src="__PUBLIC__/selfjs/self_form.js"></script>
+<script>
+
+    var lock    =   1
+
+    function ajaxUpdateMenu(data)
+    {
+        $.ajax({
+            url:"{:U('ajaxUpdateMenu')}",
+            data:data,
+            type:"POST",
+            success:function(res){
+                if (res.code == 1) {
+                    layer.msg(res.msg);
+                    setTimeout(function(){window.location.href="{:U('index')}"},1000);
+                } else{
+                    layer.msg(res.msg);
+                    lock=1;
+                }
+            }
+        });
+    }
+
+    layui.use('form', function(){
+        var form = layui.form;
+
+        form.on('submit(updatemenu)',function(data){
+            if (lock) {
+                lock=0;
+                ajaxUpdateMenu(data.field);
+            }
+
+            return false;
+        });
+    });
+
+
+
+    $('#ico').click(function(){
+        var html    =   createIcoHtml();
+        layer.open({
+            type: 1,
+            area:'70%',
+            content:html,
+        });
+    });
+    var ico_info    =   {$ico_info};
+    function createIcoHtml()
+    {
+        var html        =   "";
+            for(var i in ico_info){
+                html    +=  "<div class='ico' ico='"+ico_info[i]+"' style='display:inline-block;padding:15px;'><i style='font-size:60px;color:#555' class='iconfont "+ico_info[i]+"'></i></div>";
+            }
+        return html
+    }
+
+    $(document).on('click','.ico',function () {
+        layer.closeAll();
+        var ico     =   $(this).attr('ico');
+        $('#ico').val(ico);
+        var html    =   "<i class='iconfont "+ico+"'></i>";
+        $('#show_ico').html(html);
+
+    });
+</script>
